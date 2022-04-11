@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 def LoadData(dataType):
@@ -28,3 +29,31 @@ def LoadData(dataType):
         test_y = np.array(test_y)
 
         return test_x, test_y
+
+
+def DrawGraph(train, valid):
+    # removing first element because usually that is a very big number
+    del train[0]
+    del valid[0]
+
+    epochs = list(range(1, len(train)+1))
+
+    plt.plot(epochs, train, label="Train")
+
+    plt.plot(epochs, valid, label="Valid")
+
+    # naming the x axis
+    plt.xlabel('Epochs')
+    # naming the y axis
+    plt.ylabel('Loss')
+    # giving a title to my graph
+    plt.title('Train and validation loss')
+
+    # show a legend on the plot
+    plt.legend()
+
+    # function to show the plot
+    # plt.show()
+    # plt.savefig('figures/loss-{}.png'.format(exp_name))
+    plt.savefig('results/loss.png')
+    plt.clf()

@@ -17,9 +17,18 @@ def Test(name):
     print("Loading model")
     model = tf.keras.models.load_model("./models/"+name+".h5")
     print("Making predictions on test data")
-    pred = Predict(model, testingData)
-    print(pred)
-    print(testingLabels)
+
+    prediction = Predict(model, testingData)
+
+    model.evaluate(testingData, testingLabels)
+
+    f = open('results/prediction.txt', 'w')
+
+    f.write("ground truth --- prediction\n")
+
+    for i in range(prediction.shape[0]):
+        f.write("{}             {}\n".format(
+            testingLabels[i], prediction[i][0]))
 
 
 if __name__ == '__main__':

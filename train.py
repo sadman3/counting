@@ -8,21 +8,21 @@ Original file is located at
 """
 
 import tensorflow as tf
-from utils import LoadData
+from utils import LoadData, DrawGraph
 
 
 def PretrainedModel():
     new_input = tf.keras.Input(shape=(186, 116, 3))
-    model = tf.keras.applications.vgg16.VGG16(
+    pre_trained_model = tf.keras.applications.vgg16.VGG16(
         include_top=False, input_tensor=new_input, pooling='avg')
 
-    # # pre_trained_model.trainable = False
+    #pre_trained_model.trainable = False
 
     # # # custom modifications on top of pre-trained model
-    # model = tf.keras.models.Sequential()
-    # model.add(pre_trained_model)
-    # model.add(tf.keras.layers.Dense(128, activation='relu'))
-    # model.add(tf.keras.layers.Dense(1, activation='relu'))
+    model = tf.keras.models.Sequential()
+    model.add(pre_trained_model)
+    model.add(tf.keras.layers.Dense(128, activation='relu'))
+    model.add(tf.keras.layers.Dense(1))
     model.summary()
     model.compile(
         # set optimizer to Adam; for now know that optimizers help minimize loss (how to change weights)
@@ -30,7 +30,7 @@ def PretrainedModel():
         # sparce categorical cross entropy (measure predicted dist vs. actual)
         loss=tf.keras.losses.MeanSquaredError(),
         # how often do predictions match labels
-        metrics=[tf.keras.metrics.MeanSquaredError()],
+        metrics=[tf.keras.metrics.MeanSquaredError()]
     )
     return model
 
@@ -82,8 +82,10 @@ def Train(checkpoint_name):
     model = CustomModel()
     #model = PretrainedModel()
     print("Model created.")
-    model.fit(trainingData, trainingLabels, epochs=100, batch_size=16, validation_data=(
+    history = model.fit(trainingData, trainingLabels, epochs=100, batch_size=32, validation_data=(
         validationData, validationLabels), callbacks=checkpoint)
+
+    DrawGraph(history.history['loss'], history.history['val_loss'])
     print("Model saved.")
 
 
