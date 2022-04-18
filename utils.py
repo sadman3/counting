@@ -3,7 +3,8 @@ import matplotlib.pyplot as plt
 
 
 def LoadData(dataType):
-    directory = 'dataset_small'
+    #directory = 'dataset_small'
+    directory = 'dataset'
     frames = np.load(directory+'/frames.npy')[..., 0:3]
     counts = np.load(directory+'/count.npy')
 
