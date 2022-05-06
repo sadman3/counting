@@ -8,6 +8,7 @@ __pycache__/
 *$py.class
 utils2.py
 split_dataset.py
+video_prediction.py
 
 # C extensions
 *.so
