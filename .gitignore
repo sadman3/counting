@@ -6,6 +6,8 @@ dataset_small/
 __pycache__/
 *.py[cod]
 *$py.class
+utils2.py
+split_dataset.py
 
 # C extensions
 *.so

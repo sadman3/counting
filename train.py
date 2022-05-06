@@ -11,26 +11,52 @@ import tensorflow as tf
 from utils import LoadData, DrawGraph
 
 
+# def PretrainedModel():
+#     new_input = tf.keras.Input(shape=(186, 116, 3))
+#     pre_trained_model = tf.keras.applications.vgg16.VGG16(
+#         include_top=False, input_tensor=new_input, pooling='avg')
+
+#     #pre_trained_model.trainable = False
+
+#     # # # custom modifications on top of pre-trained model
+#     model = tf.keras.models.Sequential()
+#     model.add(pre_trained_model)
+#     model.add(tf.keras.layers.Dense(128, activation='relu'))
+#     model.add(tf.keras.layers.Dense(1))
+#     model.summary()
+#     model.compile(
+#         # set optimizer to Adam; for now know that optimizers help minimize loss (how to change weights)
+#         optimizer=tf.keras.optimizers.Adam(0.001),
+#         # sparce categorical cross entropy (measure predicted dist vs. actual)
+#         loss=tf.keras.losses.MeanSquaredError(),
+#         # how often do predictions match labels
+#         metrics=[tf.keras.metrics.MeanSquaredError()]
+#     )
+#     return model
+
 def PretrainedModel():
     new_input = tf.keras.Input(shape=(186, 116, 3))
-    pre_trained_model = tf.keras.applications.vgg16.VGG16(
-        include_top=False, input_tensor=new_input, pooling='avg')
-
-    #pre_trained_model.trainable = False
-
+    pre_trained_model = tf.keras.applications.resnet50.ResNet50(
+        include_top=False, input_tensor=new_input)
+    # pre_trained_model.trainable = False
     # # # custom modifications on top of pre-trained model
     model = tf.keras.models.Sequential()
     model.add(pre_trained_model)
-    model.add(tf.keras.layers.Dense(128, activation='relu'))
+    model.add(tf.keras.layers.BatchNormalization())
+    model.add(tf.keras.layers.Flatten())
+    #model.add(tf.keras.layers.Dense(128, activation='relu'))
     model.add(tf.keras.layers.Dense(1))
     model.summary()
     model.compile(
-        # set optimizer to Adam; for now know that optimizers help minimize loss (how to change weights)
-        optimizer=tf.keras.optimizers.Adam(0.001),
-        # sparce categorical cross entropy (measure predicted dist vs. actual)
-        loss=tf.keras.losses.MeanSquaredError(),
+        # set optimizer to Adam; for now that optimizers help minimize loss (how to change weights)
+        optimizer=tf.keras.optimizers.Adam(0.0001),
+        # sparce categorical cross entropy (measured predicted dist vs. actual)
+        # loss=tf.keras.losses.MeanSquaredError(),
+        # # how often do predictions match labels
+        # metrics=[tf.keras.metrics.MeanSquaredError()]
+        loss=tf.keras.losses.MeanAbsoluteError(),
         # how often do predictions match labels
-        metrics=[tf.keras.metrics.MeanSquaredError()]
+        metrics=[tf.keras.metrics.MeanAbsoluteError()]
     )
     return model
 
@@ -75,12 +101,12 @@ def Train(checkpoint_name):
                                                      save_best_only=True,
                                                      monitor='val_loss',
                                                      mode='min'),
-                  tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=.001, patience=10)]
+                  tf.keras.callbacks.EarlyStopping(monitor='val_loss', min_delta=.001, patience=6)]
 
     trainingData, trainingLabels, validationData, validationLabels = LoadData(
         "train")
-    model = CustomModel()
-    #model = PretrainedModel()
+    #model = CustomModel()
+    model = PretrainedModel()
     print("Model created.")
     history = model.fit(trainingData, trainingLabels, epochs=100, batch_size=32, validation_data=(
         validationData, validationLabels), callbacks=checkpoint)

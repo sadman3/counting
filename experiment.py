@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 
 def dataset_statistics():
-    directory = "/media/rpal/Drive_10TB/sadman/pouring_data/"
+    directory = "/media/rpal/Drive_10TB1/sadman/pouring_data/"
 
     file_list = [os.path.join(directory, item)
                  for item in os.listdir(directory) if 'npy' in item]
@@ -23,9 +23,10 @@ def dataset_statistics():
         data = np.load(file)
         total_frame += data.shape[0]
 
-        if i > 33 and i < 40 and data.shape[0] < 600:
-            temp = np.round((-1 * data[:, 1])/single_block_weight)
-            video_arr.append(temp)
+        if i > 175 and i < 185 and data.shape[0] < 700:
+            # temp = np.round((-1 * data[:, 1])/single_block_weight)
+            # video_arr.append(temp)
+            video_arr.append(data[:, 6])
         i += 1
         # arr = []
         # for i in range(data.shape[0]):
@@ -64,7 +65,7 @@ def PlotDataset(video_arr):
     # function to show the plot
     # plt.show()
     # plt.savefig('figures/loss-{}.png'.format(exp_name))
-    plt.savefig('results/spike.png')
+    plt.savefig('results/no_spike.png')
     plt.clf()
 
 
